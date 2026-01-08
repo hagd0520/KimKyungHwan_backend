@@ -14,6 +14,6 @@ public class AccountNumberSequenceRepository {
 
     @PostConstruct
     public Long getNextSequence() {
-        return redisTemplate.opsForValue().increment(ACCOUNT_NUMBER_SEQUENCE_KEY);;
+        return redisTemplate.opsForValue().increment(ACCOUNT_NUMBER_SEQUENCE_KEY);
     }
 }

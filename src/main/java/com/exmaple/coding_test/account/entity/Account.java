@@ -19,11 +19,13 @@ public class Account extends BaseEntity {
     @Column(unique = true)
     private String accountNumber;
     private String username;
+    private String password;
 
-    public static Account of(String accountNumber, String username) {
+    public static Account of(String accountNumber, String username, String password) {
         Account account = new Account();
         account.accountNumber = String.format(accountNumber);
         account.username = username;
+        account.password = password;
         return account;
     }
 }
