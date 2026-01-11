@@ -10,6 +10,11 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+@Table(
+        indexes = {
+                @Index(name = "idx_subject_account_id_asc_created_at_asc", columnList = "subjectAccountId, createdAt")
+        }
+)
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)

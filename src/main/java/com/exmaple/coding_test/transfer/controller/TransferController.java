@@ -4,12 +4,15 @@ import com.exmaple.coding_test.transfer.dto.request.TransferDepositRequest;
 import com.exmaple.coding_test.transfer.dto.request.TransferAccountTransferRequest;
 import com.exmaple.coding_test.transfer.dto.request.TransferWithdrawRequest;
 import com.exmaple.coding_test.transfer.dto.response.TransferResponse;
+import com.exmaple.coding_test.transfer.entity.TransferType;
 import com.exmaple.coding_test.transfer.service.TransferService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.awt.print.Pageable;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +32,22 @@ public class TransferController {
     @PostMapping("/api/v1/transfers/account-transfer")
     public TransferResponse accountTransfer(@Validated @RequestBody TransferAccountTransferRequest request) {
         return transferService.transfer(request);
+    }
+
+    @GetMapping("/api/v1/transfers")
+    public List<TransferResponse> findAll(
+            @RequestParam(required = true) String accountNumber,
+            @RequestParam(required = false) TransferType transferType,
+            @RequestParam(required = true) LocalDateTime startedAt,
+            @RequestParam(required = true) LocalDateTime endedAt,
+            Pageable pageable
+    ) {
+        return transferService.findAll(
+                accountNumber,
+                transferType,
+                startedAt,
+                endedAt,
+                pageable
+        );
     }
 }

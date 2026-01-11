@@ -18,8 +18,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -146,5 +149,9 @@ public class TransferService {
             transfer = findLatestTransferByAccount(account);
         }
         return transfer;
+    }
+
+    public List<TransferResponse> findAll(String accountNumber, TransferType transferType, LocalDateTime startedAt, LocalDateTime endedAt, Pageable pageable) {
+        return null;
     }
 }
