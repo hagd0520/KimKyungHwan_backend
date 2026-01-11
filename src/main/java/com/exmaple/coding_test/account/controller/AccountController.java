@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
     private final AccountService accountService;
 
-    @PostMapping("/accounts")
+    @PostMapping("/api/v1/accounts")
     public AccountResponse create(
             @RequestBody AccountCreateRequest request
     ) {
         return accountService.create(request);
     }
 
-    @DeleteMapping("/accounts/{accountNumber}")
+    @DeleteMapping("/api/v1/accounts/{accountNumber}")
     public void delete(
             @PathVariable String accountNumber
     ) {

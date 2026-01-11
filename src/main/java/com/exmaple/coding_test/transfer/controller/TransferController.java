@@ -16,17 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class TransferController {
     private final TransferService transferService;
 
-    @PostMapping("/transfers/deposit")
+    @PostMapping("/api/v1/transfers/deposit")
     public TransferResponse deposit(@Validated @RequestBody TransferDepositRequest request) {
         return transferService.deposit(request);
     }
 
-    @PostMapping("/transfers/withdraw")
+    @PostMapping("/api/v1/transfers/withdraw")
     public TransferResponse withdraw(@Validated @RequestBody TransferWithdrawRequest request) {
         return transferService.withdraw(request);
     }
 
-    @PostMapping("/transfers/account-transfer")
+    @PostMapping("/api/v1/transfers/account-transfer")
     public TransferResponse accountTransfer(@Validated @RequestBody TransferAccountTransferRequest request) {
         return transferService.transfer(request);
     }
