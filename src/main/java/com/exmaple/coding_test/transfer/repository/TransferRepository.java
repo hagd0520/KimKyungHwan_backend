@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Lock;
 
 import java.util.Optional;
 
-public interface TransferRepository extends JpaRepository<Transfer, Long> {
+public interface TransferRepository extends JpaRepository<Transfer, Long>, TransferRepositoryCustom {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Transfer> findFirstBySubjectAccountOrderByTransferIdDesc(Account subjectAccount);
 }

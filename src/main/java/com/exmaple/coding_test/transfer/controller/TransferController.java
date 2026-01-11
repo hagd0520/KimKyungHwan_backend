@@ -1,18 +1,18 @@
 package com.exmaple.coding_test.transfer.controller;
 
-import com.exmaple.coding_test.transfer.dto.request.TransferDepositRequest;
 import com.exmaple.coding_test.transfer.dto.request.TransferAccountTransferRequest;
+import com.exmaple.coding_test.transfer.dto.request.TransferDepositRequest;
 import com.exmaple.coding_test.transfer.dto.request.TransferWithdrawRequest;
 import com.exmaple.coding_test.transfer.dto.response.TransferResponse;
 import com.exmaple.coding_test.transfer.entity.TransferType;
 import com.exmaple.coding_test.transfer.service.TransferService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,16 +35,16 @@ public class TransferController {
     }
 
     @GetMapping("/api/v1/transfers")
-    public List<TransferResponse> findAll(
+    public Page<TransferResponse> findAll(
             @RequestParam(required = true) String accountNumber,
-            @RequestParam(required = false) TransferType transferType,
+            @RequestParam(required = false) TransferType type,
             @RequestParam(required = true) LocalDateTime startedAt,
             @RequestParam(required = true) LocalDateTime endedAt,
             Pageable pageable
     ) {
         return transferService.findAll(
                 accountNumber,
-                transferType,
+                type,
                 startedAt,
                 endedAt,
                 pageable

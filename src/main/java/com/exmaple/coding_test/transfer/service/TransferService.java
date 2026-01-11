@@ -15,14 +15,14 @@ import com.exmaple.coding_test.transfer.entity.TransferFeeOptionType;
 import com.exmaple.coding_test.transfer.entity.TransferType;
 import com.exmaple.coding_test.transfer.repository.TransferRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -151,7 +151,9 @@ public class TransferService {
         return transfer;
     }
 
-    public List<TransferResponse> findAll(String accountNumber, TransferType transferType, LocalDateTime startedAt, LocalDateTime endedAt, Pageable pageable) {
-        return null;
+    public Page<TransferResponse> findAll(String accountNumber, TransferType type, LocalDateTime startedAt, LocalDateTime endedAt, Pageable pageable) {
+        Account account = accountService.findByAccountNumber(accountNumber);
+        return transferRepository.findAll(account, type, startedAt, endedAt, pageable)
+                .map(TransferResponse::from);
     }
 }
