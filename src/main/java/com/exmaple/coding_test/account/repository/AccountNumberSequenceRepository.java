@@ -1,6 +1,5 @@
 package com.exmaple.coding_test.account.repository;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -12,7 +11,6 @@ public class AccountNumberSequenceRepository {
 
     private final StringRedisTemplate redisTemplate;
 
-    @PostConstruct
     public Long getNextSequence() {
         return redisTemplate.opsForValue().increment(ACCOUNT_NUMBER_SEQUENCE_KEY);
     }

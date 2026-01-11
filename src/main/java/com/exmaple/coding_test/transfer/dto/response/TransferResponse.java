@@ -21,9 +21,9 @@ public record TransferResponse(
         return new TransferResponse(
                 transfer.getTransferId(),
                 transfer.getSubjectAccount().getAccountId(),
-                transfer.getReceiverAccount().getAccountId(),
+                transfer.getReceiverAccount() != null ? transfer.getReceiverAccount().getAccountId() : null,
                 transfer.getReceiverName(),
-                transfer.getSenderAccount() != null ? transfer.getSenderAccount().getAccountId() : 0,
+                transfer.getSenderAccount() != null ? transfer.getSenderAccount().getAccountId() : null,
                 transfer.getSenderName(),
                 transfer.getType(),
                 transfer.getMessage(),

@@ -54,12 +54,13 @@ public class TransferService {
                 latestTransfer.getRemainAmount()
         );
         latestTransfer.updateNextTransfer(newTransfer);
-        validateDailyLimit(receiverAccount, newTransfer, AccountTransferAmountDailyLogType.DEPOSIT, date);
+        validateDailyLimit(receiverAccount, request.amount(), AccountTransferAmountDailyLogType.DEPOSIT, date);
 
         newTransfer = transferRepository.save(newTransfer);
         return TransferResponse.from(newTransfer);
     }
 
+    @Transactional
     public TransferResponse withdraw(TransferWithdrawRequest request) {
         LocalDate date = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
@@ -80,12 +81,13 @@ public class TransferService {
                 latestTransfer.getRemainAmount()
         );
         latestTransfer.updateNextTransfer(newTransfer);
-        validateDailyLimit(senderAccount, newTransfer, AccountTransferAmountDailyLogType.WITHDRAW, date);
+        validateDailyLimit(senderAccount, request.amount(), AccountTransferAmountDailyLogType.WITHDRAW, date);
 
         newTransfer = transferRepository.save(newTransfer);
         return TransferResponse.from(newTransfer);
     }
 
+    @Transactional
     public TransferResponse transfer(TransferAccountTransferRequest request) {
         LocalDate date = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
@@ -93,6 +95,11 @@ public class TransferService {
         double receiverFeeRate = transferFeeOptionService.getFeeRate(TransferFeeOptionType.DEPOSIT);
         Account senderAccount = accountService.findByAccountNumberAndPassword(request.senderAccountNumber(), request.password());
         double senderFeeRate = transferFeeOptionService.getFeeRate(TransferFeeOptionType.ACCOUNT_TRANSFER);
+
+        if (receiverAccount.equals(senderAccount)) {
+            throw new RuntimeException("Cannot transfer to the same account");
+        }
+
         Transfer latestReceiverTransfer = findLatestTransferByAccount(receiverAccount);
         Transfer latestSenderTransfer = findLatestTransferByAccount(senderAccount);
 
@@ -109,7 +116,7 @@ public class TransferService {
                 latestReceiverTransfer.getRemainAmount()
         );
         latestReceiverTransfer.updateNextTransfer(newReceiverTransfer);
-        validateDailyLimit(receiverAccount, newReceiverTransfer, AccountTransferAmountDailyLogType.DEPOSIT, date);
+        validateDailyLimit(receiverAccount, request.amount(), AccountTransferAmountDailyLogType.DEPOSIT, date);
 
         transferRepository.save(newReceiverTransfer);
 
@@ -126,17 +133,17 @@ public class TransferService {
                 latestSenderTransfer.getRemainAmount()
         );
         latestSenderTransfer.updateNextTransfer(newSenderTransfer);
-        validateDailyLimit(receiverAccount, newSenderTransfer, AccountTransferAmountDailyLogType.ACCOUNT_TRANSFER, date);
+        validateDailyLimit(senderAccount, request.amount(), AccountTransferAmountDailyLogType.ACCOUNT_TRANSFER, date);
 
         newSenderTransfer = transferRepository.save(newSenderTransfer);
 
         return TransferResponse.from(newSenderTransfer);
     }
 
-    private void validateDailyLimit(Account account, Transfer newTransfer, AccountTransferAmountDailyLogType type, LocalDate date) {
+    private void validateDailyLimit(Account account, long amount, AccountTransferAmountDailyLogType type, LocalDate date) {
         AccountTransferAmountDailyLog accountTransferAmountDailyLog = accountTransferAmountDailyLogService.find(account, type, date);
         long limitAmount = accountTransferDailyLimitService.getLimitAmount(account.getAccountId(), type);
-        accountTransferAmountDailyLog.increaseTotalAmount(newTransfer.getAmount());
+        accountTransferAmountDailyLog.increaseTotalAmount(amount);
         if (accountTransferAmountDailyLog.getTotalAmount() > limitAmount) {
             throw new RuntimeException("Daily %s limit exceeded".formatted(type.name()));
         }
