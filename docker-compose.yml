@@ -1,0 +1,39 @@
+services:
+  application:
+    container_name: api-server
+    restart: unless-stopped
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      SPRING_APPLICATION_NAME: coding_test
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/coding_test
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: testPassword
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_DATA_REDIS_HOST: cache
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    restart: unless-stopped
+    container_name: postgres-database
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: coding_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: testPassword
+
+  cache:
+    image: redis
+    restart: unless-stopped
+    container_name: redis-cache
+    ports:
+      - "6380:6379"
