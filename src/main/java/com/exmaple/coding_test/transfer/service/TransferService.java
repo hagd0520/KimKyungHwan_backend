@@ -6,6 +6,7 @@ import com.exmaple.coding_test.account.entity.AccountTransferAmountDailyLogType;
 import com.exmaple.coding_test.account.service.AccountService;
 import com.exmaple.coding_test.account.service.AccountTransferAmountDailyLogService;
 import com.exmaple.coding_test.account.service.AccountTransferDailyLimitService;
+import com.exmaple.coding_test.support.pagination.OffsetLimit;
 import com.exmaple.coding_test.transfer.dto.request.TransferAccountTransferRequest;
 import com.exmaple.coding_test.transfer.dto.request.TransferDepositRequest;
 import com.exmaple.coding_test.transfer.dto.request.TransferWithdrawRequest;
@@ -16,7 +17,6 @@ import com.exmaple.coding_test.transfer.entity.TransferType;
 import com.exmaple.coding_test.transfer.repository.TransferRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,10 +53,10 @@ public class TransferService {
                 feeRate,
                 latestTransfer.getRemainAmount()
         );
+        newTransfer = transferRepository.save(newTransfer);
         latestTransfer.updateNextTransfer(newTransfer);
         validateDailyLimit(receiverAccount, request.amount(), AccountTransferAmountDailyLogType.DEPOSIT, date);
 
-        newTransfer = transferRepository.save(newTransfer);
         return TransferResponse.from(newTransfer);
     }
 
@@ -80,10 +80,10 @@ public class TransferService {
                 feeRate,
                 latestTransfer.getRemainAmount()
         );
+        newTransfer = transferRepository.save(newTransfer);
         latestTransfer.updateNextTransfer(newTransfer);
         validateDailyLimit(senderAccount, request.amount(), AccountTransferAmountDailyLogType.WITHDRAW, date);
 
-        newTransfer = transferRepository.save(newTransfer);
         return TransferResponse.from(newTransfer);
     }
 
@@ -115,10 +115,10 @@ public class TransferService {
                 receiverFeeRate,
                 latestReceiverTransfer.getRemainAmount()
         );
+        newReceiverTransfer = transferRepository.save(newReceiverTransfer);
         latestReceiverTransfer.updateNextTransfer(newReceiverTransfer);
         validateDailyLimit(receiverAccount, request.amount(), AccountTransferAmountDailyLogType.DEPOSIT, date);
 
-        transferRepository.save(newReceiverTransfer);
 
         Transfer newSenderTransfer = Transfer.of(
                 TransferType.WITHDRAW,
@@ -132,10 +132,10 @@ public class TransferService {
                 senderFeeRate,
                 latestSenderTransfer.getRemainAmount()
         );
+        newSenderTransfer = transferRepository.save(newSenderTransfer);
         latestSenderTransfer.updateNextTransfer(newSenderTransfer);
         validateDailyLimit(senderAccount, request.amount(), AccountTransferAmountDailyLogType.ACCOUNT_TRANSFER, date);
 
-        newSenderTransfer = transferRepository.save(newSenderTransfer);
 
         return TransferResponse.from(newSenderTransfer);
     }
@@ -158,9 +158,9 @@ public class TransferService {
         return transfer;
     }
 
-    public Page<TransferResponse> findAll(String accountNumber, TransferType type, LocalDateTime startedAt, LocalDateTime endedAt, Pageable pageable) {
+    public Page<TransferResponse> findAll(String accountNumber, TransferType type, LocalDateTime startedAt, LocalDateTime endedAt, OffsetLimit offsetLimit) {
         Account account = accountService.findByAccountNumber(accountNumber);
-        return transferRepository.findAll(account, type, startedAt, endedAt, pageable)
+        return transferRepository.findAll(account, type, startedAt, endedAt, offsetLimit.toPageable())
                 .map(TransferResponse::from);
     }
 }

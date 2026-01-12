@@ -14,6 +14,7 @@ public class TransferFeeOption {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long transferFeeOptionId;
+    @Enumerated(EnumType.STRING)
     @Column(unique = true, nullable = false)
     private TransferFeeOptionType type;
     @Column(nullable = false)

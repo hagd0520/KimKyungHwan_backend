@@ -22,6 +22,7 @@ public class AccountTransferDailyLimit {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id")
     private Account account;
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccountTransferAmountDailyLogType type;
     @Column(nullable = false)

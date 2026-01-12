@@ -1,5 +1,6 @@
 package com.exmaple.coding_test.transfer.controller;
 
+import com.exmaple.coding_test.support.pagination.OffsetLimit;
 import com.exmaple.coding_test.transfer.dto.request.TransferAccountTransferRequest;
 import com.exmaple.coding_test.transfer.dto.request.TransferDepositRequest;
 import com.exmaple.coding_test.transfer.dto.request.TransferWithdrawRequest;
@@ -8,7 +9,6 @@ import com.exmaple.coding_test.transfer.entity.TransferType;
 import com.exmaple.coding_test.transfer.service.TransferService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,14 +40,15 @@ public class TransferController {
             @RequestParam(required = false) TransferType type,
             @RequestParam(required = true) LocalDateTime startedAt,
             @RequestParam(required = true) LocalDateTime endedAt,
-            Pageable pageable
+            @RequestParam(required = true) int offset,
+            @RequestParam(required = true) int limit
     ) {
         return transferService.findAll(
                 accountNumber,
                 type,
                 startedAt,
                 endedAt,
-                pageable
+                OffsetLimit.of(offset, limit)
         );
     }
 }
